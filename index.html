@@ -1,0 +1,492 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>What Should We Eat?</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+
+ <style>
+body {
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #DDE8BB, #F7DAD9);
+  min-height: 100vh;
+  margin: 0;
+}
+
+
+#page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 40px 16px;
+}
+
+/* Top bar with title on the right */
+#topBar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+#appTitle {
+  font-family: "Quicksand", sans-serif;
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #2A6873;; /* deep green teal */
+  text-shadow: 2px 2px 6px rgba(46, 108, 99, 0.25);
+  margin: 0;
+}
+
+
+/* Layout: sidebar + main card */
+#layout {
+  display: flex;
+  gap: 16px;
+}
+
+/* Sidebar on the left */
+#sidebar {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  padding-top: 12px;
+}
+
+/* Sidebar buttons */
+#sidebar button {
+  background: #DDE8BB; /* light sage */
+  color: #2A6873; /* teal text */
+  border-radius: 999px;
+  padding: 10px 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#sidebar button:hover {
+  background: #9DB98E; /* soft sage */
+  transform: translateX(4px);
+}
+
+/* Active tab style (if you want to add JS class switching later) */
+#sidebar button.activeTab {
+  background: #FDAEB3; /* soft pink */
+  color: white;
+  font-weight: 600;
+  transform: translateX(6px);
+}
+
+
+
+/* Main card in the center */
+#appCard {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 20px 18px 24px 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Headings & text */
+h2 {
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #2A6873;
+}
+
+h3 {
+  font-size: 1rem;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  color: #2A6873;
+}
+
+p {
+  margin: 4px 0 10px 0;
+  color: #2A6873;
+}
+
+#suggestion {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2A6873;
+  margin-top: 16px;
+  display: block;
+}
+
+
+
+/* General buttons (Generate, Save, Clear) */
+button {
+  font-family: inherit;
+}
+
+#generateBtn,
+#saveLogBtn,
+#clearHistoryBtn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #FDAEB3;
+  color: #2A6873; /* teal text for contrast */
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#generateBtn:hover,
+#saveLogBtn:hover,
+#clearHistoryBtn:hover {
+  background: #F7DAD9;
+  transform: translateY(-1px);
+}
+
+
+/* Log form */
+#logForm {
+  margin-top: 8px;
+}
+
+#logForm label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+#logForm select,
+#logForm input[type="text"],
+#logForm input[type="date"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #d2d6f0;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+/* Lists */
+#historyList,
+#statsList {
+  list-style-position: inside;
+  padding-left: 0;
+  margin: 8px auto 12px auto;
+  max-width: 360px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+#historyList li,
+#statsList li {
+  margin-bottom: 6px;
+}
+
+/* History rows with delete button */
+#historyList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#historyList li button {
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  border-radius: 999px;
+  background-color: #f3b1b3;
+  border: none;
+}
+
+#historyList li button:hover {
+  background-color: #e08888;
+}
+
+
+
+</style>
+ </head>
+ <body>
+  <div id="page">
+    <!-- Top header bar -->
+    <header id="topBar">
+      <h1 id="appTitle">What Should We Eat?</h1>
+    </header>
+
+    <!-- Main layout: sidebar + content -->
+    <div id="layout">
+      <!-- Left sidebar with tabs -->
+      <nav id="sidebar">
+        <button id="tabGenerator">Generator</button>
+        <button id="tabLog">Log</button>
+      </nav>
+
+      <!-- Main card content -->
+      <main id="appCard">
+        <section id="generatorView">
+          <h2>Generator</h2>
+          <p>Click the button and I’ll help us decide.</p>
+          <button id="generateBtn">Generate</button>
+          <p id="suggestion">---</p>
+        </section>
+
+        <section id="logView" style="display: none;">
+          <h2>Log</h2>
+
+          <div id="logForm">
+            <label for="mealSelect">What did we actually eat?</label>
+            <br>
+            <select id="mealSelect">
+              <option value="">-- Select an option --</option>
+              <option value="Sushi or Poke">Sushi or Poke</option>
+              <option value="Ramen">Ramen</option>
+              <option value="Estrella Azul">Estrella Azul</option>
+              <option value="Burgers">Burgers</option>
+              <option value="BBQ">BBQ</option>
+              <option value="Italian">Italian</option>
+              <option value="Absolute Thai">Absolute Thai</option>
+              <option value="We caved...Mcdonalds">We caved...Mcdonalds</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <input
+              type="text"
+              id="otherMeal"
+              placeholder="Type what you ate"
+              style="display: none;"
+            >
+
+            <label for="mealDate">Date:</label>
+            <input type="date" id="mealDate">
+
+            <button id="saveLogBtn">Save</button>
+
+            <p id="logMessage"></p>
+
+            <h3>History</h3>
+            <ul id="historyList"></ul>
+
+            <h3>Stats</h3>
+            <ul id="statsList"></ul>
+
+            <button id="clearHistoryBtn">Clear History</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    console.log("JavaScript is connected!");
+
+    const foods = [
+      "Sushi or Poke",
+      "Ramen",
+      "Estrella Azul",
+      "Burgers",
+      "BBQ",
+      "Italian",
+      "Absolute Thai",
+      "We're not getting McDonalds...Try again (;"
+    ];
+
+    const LOG_KEY = "mealLog";
+
+    const generateButton = document.querySelector("#generateBtn");
+    const suggestionText = document.querySelector("#suggestion");
+
+    const tabGenerator = document.querySelector("#tabGenerator");
+    const tabLog = document.querySelector("#tabLog");
+
+    const generatorView = document.querySelector("#generatorView");
+    const logView = document.querySelector("#logView");
+
+    const mealSelect = document.querySelector("#mealSelect");
+    const otherMealInput = document.querySelector("#otherMeal");
+    const mealDateInput = document.querySelector("#mealDate");
+    const saveLogBtn = document.querySelector("#saveLogBtn");
+
+    const logMessage = document.querySelector("#logMessage");
+    const historyList = document.querySelector("#historyList");
+    const statsList = document.querySelector("#statsList");
+    const clearHistoryBtn = document.querySelector("#clearHistoryBtn");
+
+    tabGenerator.classList.add("activeTab");
+
+
+    function loadLog() {
+      const stored = localStorage.getItem(LOG_KEY);
+      if (stored === null) {
+        return [];
+      }
+      return JSON.parse(stored);
+    }
+
+    function saveLog(entries) {
+      localStorage.setItem(LOG_KEY, JSON.stringify(entries));
+    }
+
+    function renderHistory() {
+      const entries = loadLog();
+
+      historyList.innerHTML = "";
+
+      entries.forEach((entry, index) => {
+        const li = document.createElement("li");
+
+        const formattedDate = new Date(entry.date).toLocaleDateString("en-US");
+        li.textContent = `${formattedDate} — ${entry.meal} `;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "❌";
+        delBtn.style.marginLeft = "10px";
+        delBtn.style.fontSize = "0.8rem";
+
+        delBtn.addEventListener("click", () => {
+          if (confirm("Delete this entry?")) {
+            const updated = loadLog();
+            updated.splice(index, 1);
+            saveLog(updated);
+            renderHistory();
+            renderStats();
+          }
+        });
+
+        li.appendChild(delBtn);
+        historyList.appendChild(li);
+      });
+    }
+
+    function calculateStats() {
+      const entries = loadLog();
+      const counts = {};
+
+      for (const entry of entries) {
+        const meal = entry.meal;
+        if (counts[meal]) {
+          counts[meal]++;
+        } else {
+          counts[meal] = 1;
+        }
+      }
+      return counts;
+    }
+
+    function renderStats() {
+      const stats = calculateStats();
+
+      statsList.innerHTML = "";
+
+      for (const meal in stats) {
+        const li = document.createElement("li");
+        li.textContent = meal + " — " + stats[meal] + " time(s)";
+        statsList.appendChild(li);
+      }
+    }
+
+    mealSelect.addEventListener("change", function () {
+      if (mealSelect.value === "Other") {
+        otherMealInput.style.display = "block";
+      } else {
+        otherMealInput.style.display = "none";
+        otherMealInput.value = "";
+      }
+    });
+
+    tabGenerator.addEventListener("click", function () {
+  generatorView.style.display = "block";
+  logView.style.display = "none";
+  tabGenerator.classList.add("activeTab");
+  tabLog.classList.remove("activeTab");
+});
+
+
+tabLog.addEventListener("click", function () {
+  generatorView.style.display = "none";
+  logView.style.display = "block";
+  tabLog.classList.add("activeTab");
+  tabGenerator.classList.remove("activeTab");
+});
+
+
+    generateButton.addEventListener("click", function () {
+      const randomIndex = Math.floor(Math.random() * foods.length);
+      const pickedFood = foods[randomIndex];
+
+      console.log("Picked:", pickedFood);
+      suggestionText.textContent = pickedFood;
+    });
+
+    saveLogBtn.addEventListener("click", function () {
+      const selected = mealSelect.value;
+      const date = mealDateInput.value;
+
+      let meal = selected;
+
+      if (selected === "") {
+        logMessage.textContent = "Please select a meal.";
+        return;
+      }
+
+      if (selected === "Other") {
+        const typed = otherMealInput.value.trim();
+        if (typed === "") {
+          logMessage.textContent = "Please type what you ate.";
+          return;
+        }
+        meal = typed;
+      }
+
+      if (date === "") {
+        logMessage.textContent = "Please select a date.";
+        return;
+      }
+
+      const entries = loadLog();
+
+      entries.unshift({
+        meal: meal,
+        date: date
+      });
+
+      saveLog(entries);
+
+      logMessage.textContent = "Saved ✅";
+
+      renderHistory();
+      renderStats();
+    });
+
+    // Auto-set today's date in the date input
+    const today = new Date().toISOString().split("T")[0];
+    mealDateInput.value = today;
+
+    clearHistoryBtn.addEventListener("click", function () {
+      const confirmClear = confirm("Are you sure you want to clear all history?");
+      if (!confirmClear) return;
+
+      localStorage.removeItem(LOG_KEY);
+
+      renderHistory();
+      renderStats();
+      logMessage.textContent = "History cleared. 🧹";
+    });
+
+    // initial render
+    renderHistory();
+    renderStats();
+  </script>
+</body>
+
+</html>
